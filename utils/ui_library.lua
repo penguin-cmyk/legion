@@ -1208,6 +1208,7 @@ function Library:tab(options)
 		Position = UDim2.new(0, 5, 0.5, 0),
 		Size = UDim2.new(0, 15, 0, 15),
 		Image = options.Icon,
+		ImageColor3 = Color3.fromRGB(255,255,255),
 		Theme = {ImageColor3 = "StrongText"}
 	})
 
