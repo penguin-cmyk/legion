@@ -15,7 +15,7 @@ getgenv().play_sounds = true;
 
 local FakeSound = Instance.new("Sound",game:GetService("Workspace"));
 
-function Library:init()
+function Library:Initialize()
     if not isfolder("LegionAssets") then 
         makefolder("LegionAssets")
     end
