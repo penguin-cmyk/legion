@@ -3,7 +3,7 @@ local MacLib = {
 	Options = {}, 
 	Folder = "Maclib", 
 	GetService = function(service)
-		return cloneref and cloneref(game:GetService(service)) or game:GetService(service)
+		return cloneref(game:GetService(service))
 	end
 }
 
