@@ -5,7 +5,7 @@ local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 local MainEvent          = ReplicatedStorage:WaitForChild("MainEvent")
 
 local Library    = {}
-local Images     = { "bank"}
+local Images     = {}
 local ImagesUrl  = ""
 
 local Connections = {}
