@@ -920,7 +920,8 @@ function Library:create(options)
 	rawset(mt, "creditsContainer", creditsTab.container)
 
 	creditsTab:credit{Name = "Percent", Description = "Developer", Discord = "6prozent"}
-	creditsTab:credit{Name = "Solo", Description = "Developer", Discord = "5364f2f2fc4f54e9d47ad29cfb08ef43"}
+	creditsTab:credit{Name = "SoloDev", Description = "Developer", Discord = "5364f2f2fc4f54e9d47ad29cfb08ef43"}
+
 	return mt
 end
 
@@ -1208,7 +1209,6 @@ function Library:tab(options)
 		Position = UDim2.new(0, 5, 0.5, 0),
 		Size = UDim2.new(0, 15, 0, 15),
 		Image = options.Icon,
-		ImageColor3 = Color3.fromRGB(255,255,255),
 		Theme = {ImageColor3 = "StrongText"}
 	})
 
@@ -3554,6 +3554,7 @@ function Library:label(options)
 
 	return methods
 end
+
 return setmetatable(Library, {
 	__index = function(_, i)
 		return rawget(Library, i:lower())
