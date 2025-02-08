@@ -5,8 +5,8 @@ local ReplicatedStorage  = game:GetService("ReplicatedStorage")
 local MainEvent          = ReplicatedStorage:WaitForChild("MainEvent")
 
 local Library    = {}
-local Images     = {}
-local ImagesUrl  = ""
+local Images     = {"user"}
+local ImagesUrl  = "https://raw.githubusercontent.com/penguin-cmyk/legion/refs/heads/main/Assets/"
 
 local Connections = {}
 
@@ -20,7 +20,7 @@ function Library:Initialize()
         makefolder("LegionAssets")
     end
     for index,image in pairs(Images) do 
-        writefile(`LegionAssets/{image}.png`, game:HttpGet(`ImagesUrl/{image}.png`))
+        writefile(`LegionAssets/{image}.png`, game:HttpGet(`{ImagesUrl}/{image}.png`))
     end 
 end 
 
