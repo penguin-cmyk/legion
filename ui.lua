@@ -1,4 +1,4 @@
--- maclib
+-- maclib (not made by me)
 local MacLib = { 
 	Options = {}, 
 	Folder = "Maclib", 
