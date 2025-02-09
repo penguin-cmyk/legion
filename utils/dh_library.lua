@@ -1,10 +1,5 @@
 local function service(service)
-    for i,v in pairs(game:GetChildren()) do 
-	if v.Name == service then 
-	   return cloneref(v) 
-	end 
-    end
-    return nil
+    return cloneref(game:GetService(service))
 end 
 
 local Players      = service("Players")
