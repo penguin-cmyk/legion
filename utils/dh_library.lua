@@ -1,7 +1,17 @@
-local Players      = game:GetService("Players")
+local function service(service)
+    for i,v in pairs(game:GetChildren()) do 
+	if v.Name == service then 
+	   return cloneref(v) 
+	end 
+    end
+    return nil
+end 
+
+local Players      = service("Players")
 local LocalPlayer  = Players.LocalPlayer
 
-local ReplicatedStorage  = game:GetService("ReplicatedStorage")
+local Workspace          = service("Workspace")
+local ReplicatedStorage  = service("ReplicatedStorage")
 local MainEvent          = ReplicatedStorage:WaitForChild("MainEvent")
 
 local Library    = {}
@@ -14,6 +24,8 @@ getgenv().is_anim_playing = false;
 getgenv().play_sounds = true; 
 
 local FakeSound = Instance.new("Sound",game:GetService("Workspace"));
+
+
 
 function Library:Initialize()
     if not isfolder("LegionAssets") then 
@@ -147,11 +159,18 @@ function Library:PlayAudio(id: number)
 end 
 
 function Library:View(target)
-    if target ~= nil and game:GetService("Workspace").Players:FindFirstChild(target) then
-        game:GetService("Workspace"):FindFirstChild("Camera").CameraSubject =  game:GetService("Workspace").Players:FindFirstChild(target).Humanoid
+    if target ~= nil and Workspace.Players:FindFirstChild(target) then
+        Workspace:FindFirstChild("Camera").CameraSubject =  Workspace.Players:FindFirstChild(target).Humanoid
     end 
 end 
-
+function Library:GetCar()
+    local Vehicles =  Workspace:FindFirstChild("Vehicles");
+    local Car = Vehicles:FindFirstChild(service("Players").LocalPlayer.Name)
+    if Car then 
+	return Car
+    end 
+   return nil 
+end 
 
 function Library:NoVelocity(character: Model)
     for index,part in pairs(character:GetChildren()) do 
@@ -337,12 +356,12 @@ function Library:Services()
         LocalPlayer = LocalPlayer,
         ReplicatedStorage = ReplicatedStorage,
         MainEvent = MainEvent,
-        RunService = game:GetService("RunService"),
-        Workspace = game:GetService("Workspace"),
-        Lighting = game:GetService("Lighting"),
-        TweenService = game:GetService("TweenService"),
-        HttpService = game:GetService("HttpService"),
-        UserInputService = game:GetService("UserInputService"),
+        RunService = service("RunService"),
+        Workspace = service("Workspace"),
+        Lighting = service("Lighting"),
+        TweenService = service("TweenService"),
+        HttpService = service("HttpService"),
+        UserInputService = service("UserInputService"),
         VirtualInputManager = Instance.new("VirtualInputManager"),
     }
 end 
