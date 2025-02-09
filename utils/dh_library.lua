@@ -10,7 +10,7 @@ local ReplicatedStorage  = service("ReplicatedStorage")
 local MainEvent          = ReplicatedStorage:WaitForChild("MainEvent")
 
 local Library    = {}
-local Images     = {"user","dice"}
+local Images     = {"user","dice","gun"}
 local ImagesUrl  = "https://raw.githubusercontent.com/penguin-cmyk/legion/refs/heads/main/Assets/"
 
 local Connections = {}
