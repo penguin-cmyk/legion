@@ -193,7 +193,7 @@ function Library:Remove(character:Model ,part: string)
 end 
 
 function Library:CanCollide(character:Model,value: boolean)
-    for index,part in pairs(character:GetChildren()) do 
+    for index,part in pairs(character:GetDescendants()) do 
         if part:IsA("Part") or part:IsA("BasePart") then 
             part.CanCollide = value 
         end 
