@@ -3034,7 +3034,7 @@ function Library:keybind(options)
 			BackgroundColor3 = {"Secondary", -20},
 			TextColor3 = "WeakText"
 		},
-		Position = UDim2.new(1, -20,0, 16),
+		Position = UDim2.new(1, -13,0, 16),
 		Size = UDim2.new(0, 50,0, 20),
 		TextSize = 12,
 		Text = (options.Keybind and tostring(options.Keybind.Name):upper()) or "?"
