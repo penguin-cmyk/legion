@@ -45,6 +45,13 @@ function Library:RemoveConnection(name: string)
     end
 end
 
+function Library:Create(type,properties)
+    local NewInstance = Instance.new(type)
+    for i,v in pairs(properties) do 
+	NewInstance[i] = v 
+    end 
+    return NewInstance
+end 
 
 
 
