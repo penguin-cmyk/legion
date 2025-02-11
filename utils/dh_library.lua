@@ -69,7 +69,7 @@ function Library:CreateAnimation(id: number)
 end     
 
 function Library:StopAnimation(Character: Model ,id: number)
-    for index,anim in ipairs(Character:FindFirstChild("Humanoid"):GetPlayingAnimationTracks()) do 
+    for index,anim in pairs(Character:FindFirstChild("Humanoid"):GetPlayingAnimationTracks()) do 
         if anim.Animation.AnimationId:match("rbxassetid://" .. tostring(id)) then
             anim:Stop()
         end
@@ -77,7 +77,7 @@ function Library:StopAnimation(Character: Model ,id: number)
 end 
 
 function Library:IsAnimPlaying(Character: Model ,id: number)
-    for index,anim in ipairs(Character:FindFirstChild("Humanoid"):GetPlayingAnimationTracks()) do 
+    for index,anim in pairs(Character:FindFirstChild("Humanoid"):GetPlayingAnimationTracks()) do 
         if anim.Animation.AnimationId:match("rbxassetid://" .. tostring(id)) then
             return true
         end
