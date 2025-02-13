@@ -141,6 +141,7 @@ function Library:PlayAudio(id: number)
         LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND")
 
         task.spawn(function()
+	    repeat wait() until LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").SoundId == "rbxassetid://"..tostring(id)
             task.wait(LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength)
             Library:StopAudio()
         end)
