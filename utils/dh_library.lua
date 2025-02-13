@@ -129,20 +129,19 @@ function Library:PlayAudio(id: number)
     local BoomBox = LocalPlayer.Backpack:FindFirstChild("[Boombox]")
     if Boombox then 
         Boombox.Parent = LocalPlayer.Character
-        MainEvent:FireServer("Boombox",tonumber(id))
-
         BoomBox = LocalPlayer.Character:FindFirstChild("[Boombox]")
 
         Boombox.RequiresHandle = false 
-        Boombox.Parent = LocalPlayer.Backpack
+        LocalPlayer.Character.Humanoid:EquipTool(Boombox)
 
         LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false 
 
+	MainEvent:FireServer("Boombox",tonumber(id))
+		
         LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND")
 
         task.spawn(function()
-            repeat task.wait() until LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").SoundId == "rbxassetid://"..tostring(id)
-            task.wait(LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength - 0.1)
+            task.wait(LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength)
             Library:StopAudio()
         end)
     else 
