@@ -18,7 +18,7 @@ local Connections = {}
 getgenv().is_anim_playing = false;
 getgenv().play_sounds = true; 
 
-local FakeSound = Instance.new("Sound",game:GetService("Workspace"));
+local Sound = Instance.new("Sound",game:GetService("Workspace"));
 
 
 
@@ -120,38 +120,35 @@ function Library:PlayAnimation(character,id,speed,time,smoothing)
 end 
 
 function Library:StopAudio()
-    FakeSound:Stop()
+    Sound:Stop()
     MainEvent:FireServer("BoomboxStop")
 end 
 
 function Library:PlayAudio(id: number)
-    if not getgenv().play_sounds then return end 
-    local BoomBox = LocalPlayer.Backpack:FindFirstChild("[Boombox]")
-    if Boombox then 
-        Boombox.Parent = LocalPlayer.Character
-        BoomBox = LocalPlayer.Character:FindFirstChild("[Boombox]")
+    Id = tonumber(id)
+    local OriginalKeyUpValue = 0 
+    if LocalPlayer.Backpack:FindFirstChild("[Boombox]") then
+        LocalPlayer.Backpack["[Boombox]"].Parent = LocalPlayer.Character
+        Services.ReplicatedStorage.MainEvent:FireServer("Boombox", Id)
+        LocalPlayer.Character["[Boombox]"].RequiresHandle = false
+        LocalPlayer.Character["[Boombox]"].Parent = LocalPlayer.Backpack
+        LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false
 
-        Boombox.RequiresHandle = false 
-        LocalPlayer.Character.Humanoid:EquipTool(Boombox)
-
-        MainEvent:FireServer("Boombox",tonumber(id))
-
-        LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false 
-		
         LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND")
 
-        task.spawn(function()
-	    repeat wait() until LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").SoundId == "rbxassetid://"..tostring(id)
-            task.wait(LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength)
-            Library:StopAudio()
-        end)
+        coroutine.wrap(function()
+            repeat
+                task.wait()
+            until LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.SoundId == "rbxassetid://" .. Id and LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.TimeLength > 0.01
+            OriginalKeyUpValue = OriginalKeyUpValue + 1
+            task.wait(LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.TimeLength - 0.1)
+            if LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.SoundId == "rbxassetid://" .. Id and OriginalKeyUpValue == OriginalKeyUpValue then
+                MainEvent:FireServer("BoomboxStop")
+            end
+        end)()
     else 
-        FakeSound.SoundId = "rbxassetid://"..tostring(id)
-        FakeSound:Play()
-            task.spawn(function()
-                task.wait(FakeSound.TimeLength - 0.1)
-                Library:StopAudio()
-        end)
+        Sound.SoundId = "rbxassetid://" .. Id
+        Sound:Play()
     end 
 end 
 
