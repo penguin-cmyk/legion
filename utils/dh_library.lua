@@ -18,7 +18,7 @@ local Connections = {}
 getgenv().is_anim_playing = false;
 getgenv().play_sounds = true; 
 
-local Sound = Instance.new("Sound",game:GetService("Workspace"));
+local FakeSound = Instance.new("Sound",game:GetService("Workspace"));
 
 
 
@@ -120,20 +120,36 @@ function Library:PlayAnimation(character,id,speed,time,smoothing)
 end 
 
 function Library:StopAudio()
-    Sound:Stop()
+    FakeSound:Stop()
     MainEvent:FireServer("BoomboxStop")
 end 
 
-function Library:PlayAudio(id: number) -- nur zum testen gerade
-	local boombox = game.Players.LocalPlayer.Backpack:FindFirstChild("[Boombox]")
-	boombox.RequiresHandle = false
-	game.Players.LocalPlayer.Character.Humanoid:EquipTool(boombox)
-	game.ReplicatedStorage.MainEvent:FireServer("Boombox", id)
-	game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
+function Library:PlayAudio(id: number)
+    if not getgenv().play_sounds then return end 
+    local BoomBox = LocalPlayer.Backpack:FindFirstChild("[Boombox]")
+    if Boombox then 
+        Boombox.Parent = LocalPlayer.Character
+        BoomBox = LocalPlayer.Character:FindFirstChild("[Boombox]")
+        MainEvent:FireServer("Boombox",tonumber(id))
 
-	repeat wait() until game.Players.LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").SoundId == "rbxassetid://"..tostring(id)
-	task.wait(game.Players.LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.TimeLength)
-	game.ReplicatedStorage.MainEvent:FireServer("BoomboxStop")
+        Boombox.RequiresHandle = false 
+        LocalPlayer.Character.Humanoid:EquipTool(Boombox)
+
+        LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false 
+		
+        LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND")
+
+        task.spawn(function()
+	    repeat wait() until LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").SoundId == "rbxassetid://"..tostring(id)
+            task.wait(LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength)
+            Library:StopAudio()
+        end)
+    else 
+        FakeSound.SoundId = "rbxassetid://"..tostring(id)
+        FakeSound:Play()
+        task.wait(FakeSound.TimeLength - 0.1)
+        Library:StopAudio()
+    end 
 end 
 
 function Library:View(target)
