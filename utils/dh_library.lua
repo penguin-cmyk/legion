@@ -129,7 +129,7 @@ function Library:PlayAudio(id: number)
     local OriginalKeyUpValue = 0 
     if LocalPlayer.Backpack:FindFirstChild("[Boombox]") then
         LocalPlayer.Backpack["[Boombox]"].Parent = LocalPlayer.Character
-        Services.ReplicatedStorage.MainEvent:FireServer("Boombox", Id)
+        MainEvent:FireServer("Boombox", Id)
         LocalPlayer.Character["[Boombox]"].RequiresHandle = false
         LocalPlayer.Character["[Boombox]"].Parent = LocalPlayer.Backpack
         LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false
