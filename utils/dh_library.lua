@@ -124,32 +124,16 @@ function Library:StopAudio()
     MainEvent:FireServer("BoomboxStop")
 end 
 
-function Library:PlayAudio(id: number)
-    Id = tonumber(id)
-    local OriginalKeyUpValue = 0 
-    if LocalPlayer.Backpack:FindFirstChild("[Boombox]") then
-        LocalPlayer.Backpack["[Boombox]"].Parent = LocalPlayer.Character
-        MainEvent:FireServer("Boombox", Id)
-        LocalPlayer.Character["[Boombox]"].RequiresHandle = false
-        LocalPlayer.Character["[Boombox]"].Parent = LocalPlayer.Backpack
-        LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false
+function Library:PlayAudio(id: number) -- nur zum testen gerade
+	local boombox = game.Players.LocalPlayer.Backpack:FindFirstChild("[Boombox]")
+	boombox.RequiresHandle = false
+	game.Players.LocalPlayer.Character.Humanoid:EquipTool(boombox)
+	game.ReplicatedStorage.MainEvent:FireServer("Boombox", id)
+	game.Players.LocalPlayer.Character.Humanoid:UnequipTools()
 
-        LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND")
-
-        coroutine.wrap(function()
-            repeat
-                task.wait()
-            until LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.SoundId == "rbxassetid://" .. Id and LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.TimeLength > 0.01
-            OriginalKeyUpValue = OriginalKeyUpValue + 1
-            task.wait(LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.TimeLength - 0.1)
-            if LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.SoundId == "rbxassetid://" .. Id and OriginalKeyUpValue == OriginalKeyUpValue then
-                MainEvent:FireServer("BoomboxStop")
-            end
-        end)()
-    else 
-        Sound.SoundId = "rbxassetid://" .. Id
-        Sound:Play()
-    end 
+	repeat wait() until game.Players.LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").SoundId == "rbxassetid://"..tostring(id)
+	task.wait(game.Players.LocalPlayer.Character.LowerTorso.BOOMBOXSOUND.TimeLength)
+	game.ReplicatedStorage.MainEvent:FireServer("BoomboxStop")
 end 
 
 function Library:View(target)
