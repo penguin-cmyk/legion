@@ -18,7 +18,7 @@ local Connections = {}
 getgenv().is_anim_playing = false;
 getgenv().play_sounds = true; 
 
-local FakeSound = Instance.new("Sound",game:GetService("Workspace"));
+local FakeSound = Instance.new("Sound",Workspace);
 
 
 
