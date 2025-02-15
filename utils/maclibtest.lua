@@ -48,6 +48,7 @@ local assets = {
 --// Functions
 local function GetGui()
     local Main = cloneref(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"))
+    local StarterGui = cloneref(game:GetService("StarterGui"))
     local newGui = Instance.new("ScreenGui")
 	newGui.ScreenInsets = Enum.ScreenInsets.None
 	newGui.ResetOnSpawn = false
