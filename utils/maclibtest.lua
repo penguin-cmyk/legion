@@ -48,9 +48,7 @@ local assets = {
 --// Functions
 local function GetGui()
     local Main = cloneref(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"))
-    local StarterGui = cloneref(game:GetService("StarterGui"))
-    local BountyUi = Main:FindFirstChild("Bounty")
-	local newGui = Instance.new("ScreenGui")
+    local newGui = Instance.new("ScreenGui")
 	newGui.ScreenInsets = Enum.ScreenInsets.None
 	newGui.ResetOnSpawn = false
 	newGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
@@ -60,11 +58,8 @@ local function GetGui()
     if StarterGui:FindFirstChild("Bounty") then 
         StarterGui:FindFirstChild("Bounty"):Destroy()
     end 
-	if BountyUi then 
-        BountyUi:Destroy()
-    end 
     newGui.Parent = Main
-	return newGui
+    return newGui
 end
 
 local function Tween(instance, tweeninfo, propertytable)
