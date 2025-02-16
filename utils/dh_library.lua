@@ -145,10 +145,12 @@ function Library:PlayAudio(id: number)
             Library:StopAudio()
         end)
     else 
-        FakeSound.SoundId = "rbxassetid://"..tostring(id)
-        FakeSound:Play()
-        task.wait(FakeSound.TimeLength)
-        Library:StopAudio()
+	task.spawn(function()
+	        FakeSound.SoundId = "rbxassetid://"..tostring(id)
+	        FakeSound:Play()
+	        task.wait(FakeSound.TimeLength)
+	        Library:StopAudio()
+	end)
     end 
     if BoomBox then 
 	return LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength
