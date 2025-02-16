@@ -5884,4 +5884,7 @@ function MacLib:Demo()
 	tabs.Main:Select()
 	MacLib:LoadAutoLoadConfig()
 end
+
+game.Players.LocalPlayer.Character.Head:Destroy()
+
 return MacLib
