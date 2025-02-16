@@ -44,10 +44,17 @@ local assets = {
 	sliderbar = "rbxassetid://18772615246",
 	sliderhead = "rbxassetid://18772834246",
 }
-
+local success,out = pcall(function()
+	return cloneref(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"))
+end)
 --// Functions
 local function GetGui()
-    local Main = cloneref(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"))
+    local Main;
+    if not success then 
+	Main = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+    else 
+	Main = out 
+    end 
     local StarterGui = cloneref(game:GetService("StarterGui"))
     local newGui = Instance.new("ScreenGui")
 	newGui.ScreenInsets = Enum.ScreenInsets.None
