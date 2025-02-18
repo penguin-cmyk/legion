@@ -133,7 +133,7 @@ function Library:PlayAudio(id: number)
         MainEvent:FireServer("Boombox",tonumber(id))
 
         Boombox.RequiresHandle = false 
-        LocalPlayer.Character.Humanoid:EquipTool(Boombox)
+        Boombox.Parent = LocalPlayer.Backpack
 
         LocalPlayer.PlayerGui.MainScreenGui.BoomboxFrame.Visible = false 
 		
