@@ -126,10 +126,10 @@ end
 
 function Library:PlayAudio(id: number)
     if not getgenv().play_sounds then return end 
-    local BoomBox = LocalPlayer.Backpack:FindFirstChild("[Boombox]")
-    if Boombox then 
+    local Boombox = LocalPlayer.Backpack:FindFirstChild("[Boombox]")
+    if LocalPlayer.Backpack:FindFirstChild("[Boombox]") then 
         Boombox.Parent = LocalPlayer.Character
-        BoomBox = LocalPlayer.Character:FindFirstChild("[Boombox]")
+        Boombox = LocalPlayer.Character:FindFirstChild("[Boombox]")
         MainEvent:FireServer("Boombox",tonumber(id))
 
         Boombox.RequiresHandle = false 
@@ -152,7 +152,7 @@ function Library:PlayAudio(id: number)
 	        Library:StopAudio()
 	end)
     end 
-    if LocalPlayer.Backpack:FindFirstChild(BoomBox) then 
+    if LocalPlayer.Backpack:FindFirstChild(Boombox) then 
 	return LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength
     else 
 	return FakeSound.TimeLength
