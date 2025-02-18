@@ -152,7 +152,7 @@ function Library:PlayAudio(id: number)
 	        Library:StopAudio()
 	end)
     end 
-    if BoomBox then 
+    if LocalPlayer.Backpack:FindFirstChild(BoomBox) then 
 	return LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength
     else 
 	return FakeSound.TimeLength
