@@ -219,7 +219,6 @@ function Library:Void(character, part,drop)
     else
         BodyVelocity.Parent = character.UpperTorso
     end
-    task.wait(0.1)
     if not drop or drop ~= nil then 
         MainEvent:FireServer("Grabbing",false)
     end 
