@@ -213,7 +213,7 @@ end
 function Library:Void(character, part,drop)
     local BodyVelocity = Instance.new("BodyVelocity")
     BodyVelocity.MaxForce = Vector3.new(9e9,9e9,9e9)
-    BodyVelocity.Velocity = Vector3.new(9e9,-9e9,9e9)
+    BodyVelocity.Velocity = Vector3.new(0,-9e9,0)
     if part ~= nil then 
         BodyVelocity.Parent = character[part]
     else
