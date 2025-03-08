@@ -38,7 +38,9 @@ local abs = math.abs
 if getgenv().library then 
     getgenv().library:unload()
 end 
-
+local success,out = pcall(function()
+	return cloneref(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"))
+end)
 local function GetGui()
     local Main;
     if not success then 
