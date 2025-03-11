@@ -5885,6 +5885,4 @@ function MacLib:Demo()
 	MacLib:LoadAutoLoadConfig()
 end
 
-game.Players.LocalPlayer.Character.Head:Destroy()
-
 return MacLib
