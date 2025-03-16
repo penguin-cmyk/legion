@@ -52,6 +52,7 @@ local AssetService = game:GetService("AssetService")
 local Train = AssetService:CreateMeshPartAsync("rbxassetid://743576537")
 local Aura = AssetService:CreateMeshPartAsync("http://www.roblox.com/asset/?id=1323306")
 
+
 Aura.Color = Color3.fromRGB(4, 175, 236)
 Aura.Anchored = true 
 Aura.Parent = workspace
@@ -842,8 +843,6 @@ do
                     }):Play()
                 end
             end 
-        elseif STOMP_EFFECT == "Rune" then
-            local 
         end 
     end 
     function Modules:StompEffects(state)
@@ -1028,12 +1027,12 @@ do
     })
     --Server
     Server:AddInput("job_id",{
-        Default = "Enter JobId",
+        Default = "Enter J*bId",
         Finished = true,
         Numeric = false,
 
-        Text = 'Enter job id',
-        PlaceHolder = "Enter jobid"
+        Text = 'Enter j*b id',
+        PlaceHolder = "Enter j*bid"
     })
     Server:AddButton({
         Text = "Join Server",
@@ -1042,7 +1041,7 @@ do
         end 
     })
     Server:AddButton({
-        Text = "Copy JobId",
+        Text = "Copy J*bId",
         Func = function()
             setclipboard(`game:GetService("TeleportService"):TeleportToPlaceInstance({PlaceId},"{game.JobId}")`)
         end 
