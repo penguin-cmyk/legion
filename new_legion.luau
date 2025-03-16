@@ -1,13 +1,17 @@
 -- Note this is like start of development so everything is like really REALLY in beta so i dont really recommend using it !
-repeat task.wait() until game:IsLoaded()
 
+repeat task.wait() until game:IsLoaded()
+local ui_repo = "https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/"
 
 local function include(module)   
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/penguin-cmyk/legion/refs/heads/main/utils/"..module..".lua"))()
 end 
 -- Inclusions
 local DhLibrary = include("dh_library")
-local UiLibrary = include("new_ui")
+local UiLibrary = loadstring(game:HttpGet(`{ui_repo}Library.lua`))()
+local ThemeManager = loadstring(game:HttpGet(`{ui_repo}addons/ThemeManager.lua`))()
+
+
 
 local Animations = DhLibrary:Animations()
 local Services   = DhLibrary:Services()
@@ -16,8 +20,6 @@ local Sounds     = DhLibrary:Sounds()
 local Modules    = {}
 local States     = {}
 local Tools      = {}
-
-local Flags      = UiLibrary.flags
 
 local MainEvent  = Services.MainEvent
 local PlaceId    = game.PlaceId
@@ -29,13 +31,105 @@ local ReplicatedStorage = Services.ReplicatedStorage
 local LocalPlayer       = Services.LocalPlayer
 local RunService        = Services.RunService
 local Workspace         = Services.Workspace
+local Players           = Services.Players 
 
 local Skins   = ReplicatedStorage:WaitForChild("Bike").Skins
 local Camera  = Workspace.CurrentCamera 
 
 local Starting = true 
 
-UiLibrary:notification({text = "Legion loading..."})
+local RoadRoller = game:GetObjects("rbxassetid://85904556439762")[1]
+local SonicRings = game:GetObjects("rbxassetid://107016840921635")[1]
+local BlackHole  = game:GetObjects("rbxassetid://107558636253769")[1]
+local Spirit     = game:GetObjects("rbxassetid://89731535148122")[1]
+local Charm      = game:GetObjects("rbxassetid://139067309930404")[1]
+local Thanos     = game:GetObjects("rbxassetid://129891025243944")[1]
+local AfterSlash = game:GetObjects("rbxassetid://102168430997910")[1]
+
+local TweenService = game:GetService("TweenService")
+local AssetService = game:GetService("AssetService")
+
+local Train = AssetService:CreateMeshPartAsync("rbxassetid://743576537")
+local Aura = AssetService:CreateMeshPartAsync("http://www.roblox.com/asset/?id=1323306")
+
+local HeavenFx = Instance.new("Model",workspace)
+local Shockwave = AssetService:CreateMeshPartAsync("rbxassetid://437347603")
+local Meshpart  = AssetService:CreateMeshPartAsync("rbxassetid://5812640290")
+Shockwave.Parent = HeavenFx
+Shockwave.Name = "Shockwave"
+Shockwave.Material = "ForceField"
+Shockwave.Color = Color3.fromRGB(244,244,255)
+Shockwave.CanCollide = false 
+Shockwave.CastShadow = false 
+Shockwave.Anchored = true 
+
+Meshpart.Parent = HeavenFx
+Meshpart.Color = Color3.fromRGB(248,248,248)
+Meshpart.Material = "Neon"  
+Meshpart.CanCollide = false 
+Meshpart.CastShadow = false 
+Meshpart.Anchored = true 
+
+Aura.Color = Color3.fromRGB(4, 175, 236)
+Aura.Anchored = true 
+Aura.Parent = workspace
+Aura.CanCollide = false 
+Aura.CastShadow = false 
+
+Train.TextureID = "rbxassetid://743576568"
+Train.Anchored = true 
+Train.Parent = workspace
+Train.CFrame = Train.CFrame * CFrame.Angles(0,-math.rad(90),0)
+------------------------------------------------------------------------------------------------------
+-- Ts shake Module was NOT made by me
+local ShakeModule = {}
+
+local shakeActive = false
+local shakeStartTime = 0
+local shakeDuration = 0.8
+local initialIntensity = 1
+
+local noise = math.noise 
+
+local function updateCameraShake()
+    if not shakeActive then return end
+    
+    local elapsed = os.clock() - shakeStartTime
+    if elapsed >= shakeDuration then
+        shakeActive = false
+        return
+    end
+    
+    local progress = elapsed / shakeDuration
+    local currentIntensity = initialIntensity * (1 - progress^2)
+    
+    local downwardOffset = Vector3.new(0, -0.5 * currentIntensity, 0)
+    local bounceOffset = Vector3.new(0, 0.3 * currentIntensity * math.sin(progress * 10), 0)
+    
+    local timeFactor = os.clock() * 10
+    local shakeX = noise(timeFactor, 0) * currentIntensity * 0.1
+    local shakeY = noise(timeFactor, 100) * currentIntensity * 0.1
+    local shakeZ = noise(timeFactor, 200) * currentIntensity * 0.1
+    
+    local rotX = noise(timeFactor, 300) * currentIntensity * 0.05 
+    local rotY = noise(timeFactor, 400) * currentIntensity * 0.05 
+    local rotZ = noise(timeFactor, 500) * currentIntensity * 0.05 
+    
+    local offsetPosition = downwardOffset + bounceOffset + Vector3.new(shakeX, shakeY, shakeZ)
+    local offsetRotation = CFrame.Angles(rotX, rotY, rotZ)
+    
+    Camera.CFrame = Camera.CFrame * CFrame.new(offsetPosition) * offsetRotation
+end
+
+function ShakeModule.StartShake(intensity, duration)
+    initialIntensity = intensity or 1
+    shakeDuration = duration or 0.8
+    shakeStartTime = os.clock()
+    shakeActive = true
+end
+
+DhLibrary:AddConnection("ShakeModule", Services.RunService.Heartbeat:Connect(updateCameraShake))
+------------------------------------------------------------------------------------------------------
 -- Modules 
 do 
     function Modules:GetChar(option: string): Instance
@@ -127,7 +221,7 @@ do
                 return
             end 
             
-            local Speed: number = Flags["FlySpeed"] or 2
+            local Speed: number = States.FlySpeed or 2
             local MoveDirection: Vector3 = Vector3.new(
                 UserInputService:IsKeyDown(Enum.KeyCode.D) and 1 or ( UserInputService:IsKeyDown(Enum.KeyCode.A) and -1 or 0 ),
                 UserInputService:IsKeyDown(Enum.KeyCode.Space) and 0.2,
@@ -176,7 +270,7 @@ do
                 return 
             end 
 
-            local Speed: number = Flags["CarFlySpeed"] or 2
+            local Speed: number = States.VehicleFlySpeed or 2
             local MoveDirection: Vector3 = Vector3.new(
                 UserInputService:IsKeyDown(Enum.KeyCode.D) and 1 or ( UserInputService:IsKeyDown(Enum.KeyCode.A) and -1 or 0 ),
                 UserInputService:IsKeyDown(Enum.KeyCode.Space) and 0.2,
@@ -323,21 +417,18 @@ do
  
 end 
 
--- Ui Library
-local MainWindow = UiLibrary:window({
-    name = "Legion [GRABS]",
-    Size = UDim2.fromOffset(500,650)
+local MainWindow = UiLibrary:CreateWindow({
+    Title = "Legion [GRABS]",
+    Center = true,
+    AutoShow = true,
+    TabPadding = 8,
+    MenuFadeTime = 0.3
 })
 
-local MainTab    = MainWindow:tab({ name = "Main" })
-local MiscTab    = MainWindow:tab({ name = "Misc" })
+local MainTab    = MainWindow:AddTab("Main")
+local MiscTab    = MainWindow:AddTab("Misc")
 
-local MainSection = MainTab:section({ name = "Main", fill = 0.2 })
-
-MainWindow.toggle_playerlist(false)
-MainWindow.toggle_list(false)
-
-MainTab.open_tab()
+local MainSection = MainTab:AddLeftGroupbox("Main")
 
 -- Grab Modules
 do 
@@ -395,7 +486,7 @@ do
         })
 
         GrabbingConstraint.H.Length = 9e9 
-        DhLibrary:PlayAudio(Flags["CustomSound"] or 4799902666) 
+        DhLibrary:PlayAudio(Options.CustomSound.Value or 4799902666) 
 
         task.spawn(function()
             task.wait(LocalPlayer.Character.LowerTorso:WaitForChild("BOOMBOXSOUND").TimeLength - 0.1)
@@ -417,27 +508,27 @@ do
              and Modules:GetChar("BodyEffects").Grabbed.Value  ~= nil 
              and States.Grab and char.UpperTorso:FindFirstChild("BodyPosition") then  
                 local Position = Character:FindFirstChild("RightHand").Position - Vector3.new(0,1,0) 
-                if Flags["grab_mode"] == "Grab" then 
+                if Options.grab_mode.Value == "Grab" then 
                     Position = Character:FindFirstChild("RightHand").Position - Vector3.new(0,1,0)
                     if not DhLibrary:IsAnimPlaying(Character,3135389157) then 
                         DhLibrary:PlayAnimation(Character,3135389157,0,.1)
                     end 
-                elseif Flags["grab_mode"] == "Behind" then 
+                elseif Options.grab_mode.Value == "Behind" then 
                     Position = Character:FindFirstChild("HumanoidRootPart").Position - Character:FindFirstChild("HumanoidRootPart").CFrame.LookVector * 3
                     DhLibrary:StopAnimation(Character,3135389157)
                     DhLibrary:StopAnimation(Character,11075367458)
-                elseif Flags["grab_mode"] == "Infront" then 
+                elseif Options.grab_mode.Value == "Infront" then 
                     Position = Modules:GetForwardPosition(3)
                     DhLibrary:StopAnimation(Character,3135389157)
                     DhLibrary:StopAnimation(Character,11075367458)
-                elseif Flags["grab_mode"] == "Custom" then 
-                    Position = Character:FindFirstChild("HumanoidRootPart").Position + Vector3.new(Flags["xAxis"],Flags["yAxis"],Flags["zAxis"])
+                elseif Options.grab_mode.Value == "Custom" then 
+                    Position = Character:FindFirstChild("HumanoidRootPart").Position + Vector3.new(Options.xAxis.Value,Options.yAxis.Value,Options.zAxis.Value)
                     DhLibrary:StopAnimation(Character,3135389157)
                     DhLibrary:StopAnimation(Character,11075367458)
                 end 
                 local Orientation = CFrame.new(UpperTorso.Position,Character:FindFirstChild("HumanoidRootPart").Position)
                 
-                if Flags["grab_mode"] == "Infront" then 
+                if Options.grab_mode.Value == "Infront" then 
                     Orientation = CFrame.new(UpperTorso.Position,Character:FindFirstChild("HumanoidRootPart").Position + Character:FindFirstChild("HumanoidRootPart").CFrame.LookVector * -5)
                 else 
                     Orientation = CFrame.new(UpperTorso.Position,Character:FindFirstChild("HumanoidRootPart").Position)
@@ -453,21 +544,21 @@ do
         end))
     end 
 
-    function Modules:DestroyTool(name: string)
-        local Tool: Tool = LocalPlayer.Backpack:FindFirstChild(name) or LocalPlayer.Character:FindFirstChild(name)
+    function Modules:DestroyTool(Text: string)
+        local Tool: Tool = LocalPlayer.Backpack:FindFirstChild(Text) or LocalPlayer.Character:FindFirstChild(Text)
         if Tool then 
             Tool:Destroy()
         end 
 
-        DhLibrary:RemoveConnection(name.."_tool")
+        DhLibrary:RemoveConnection(Text.."_tool")
     end 
 
     function Modules:GrabTool(options: { [any]: any })
         local Character: Model = Modules:GetChar()
         local Backpack: Backpack = LocalPlayer.Backpack
 
-        local tool_callback: (...any) -> ...any = options.Callback 
-        local name: string = options.Name or options.name 
+        local tool_Callback: (...any) -> ...any = options.Callback 
+        local name: string = options.name or options.Name 
         local description: string = options.Description
         local stopanimation: boolean = options.StopAnimations
 
@@ -504,7 +595,7 @@ do
                     DhLibrary:StopAnimation(Character,11075367458)
                 end 
 
-                tool_callback(GrabbedChar,Character)
+                tool_Callback(GrabbedChar,Character)
 
                 NewTool.Parent = LocalPlayer.Backpack
                 NewTool.Parent = LocalPlayer.Character
@@ -515,10 +606,11 @@ do
             end 
         end))
 
-        MainSection:toggle({
-            name = name,
-            default = false,
-            callback = function(state)
+        MainSection:AddToggle(name, {
+            Text = name,
+            Default = false,
+            ToolTip = description,
+            Callback = function(state)
                 if state then 
                     NewTool.Parent = LocalPlayer.Backpack
                 else 
@@ -528,153 +620,450 @@ do
         })
     end 
 end 
-
--- MainTab: Grabs
--- MiscTab planned: Player (fly,cframepseed,antistomp,etcc)
+local lastStompTime = 0
+local STOMP_COOLDOWN = 2
+local STOMP_EFFECT = "Spirit"
 do 
-    local Movement = MiscTab:section({ name = "Movement", side = "left" })
-    local Player = MiscTab:section({ name = "Player", side = "left" })
-    local Server = MiscTab:section({ name = "Server", side = "right" })
-    local UiSettings = MiscTab:section({ name = "Ui Settings", side = "right" })
+    local function boobs(targetCharacter)
+        -- all of these came from dh modded (the idea and assets)
+        -- I just made my own implementation of it.
+        STOMP_EFFECT = States.StompEffect or "Spirit"
+        local currentTime = tick()
+        if currentTime - lastStompTime < STOMP_COOLDOWN then 
+            return 
+        end
+        
+        lastStompTime = currentTime
+        if STOMP_EFFECT == "RoadRoller" then 
+            RoadRoller.Parent = workspace
+            RoadRoller.Anchored = true 
+            RoadRoller.CFrame = targetCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 40, 0)
+            
+            DhLibrary:PlayAudio(4877348549)
+            
+            TweenService:Create(
+                RoadRoller,
+                TweenInfo.new(0.2), 
+                { 
+                    CFrame = targetCharacter.HumanoidRootPart.CFrame * 
+                            CFrame.new(0, 3, 0) * 
+                            CFrame.Angles(math.rad(200), -math.rad(200), math.rad(90)) 
+                }
+            ):Play()
+    
+            ShakeModule.StartShake(7, 0.5)
+    
+            task.wait(2)
+            RoadRoller.CFrame = CFrame.new(20,2000,20)
+        elseif STOMP_EFFECT == "Rings" then 
+            DhLibrary:PlayAudio(7456436580)
+            local FakePart = Instance.new("Part",workspace)
+            FakePart.Transparency = 1
+            FakePart.Position = targetCharacter.Head.Position
+            FakePart.Anchored = true 
+            FakePart.CanCollide = false 
+    
+            SonicRings.Parent = FakePart
+            task.wait(0.5)
+            SonicRings.Parent = workspace
+            FakePart:Destroy()
+        elseif STOMP_EFFECT == "BlackHole" then 
+            BlackHole.Parent = workspace
+            BlackHole.Position = targetCharacter:FindFirstChild("UpperTorso").Position + Vector3.new(0,1,0)
+            BlackHole.open:Play()
+            ShakeModule.StartShake(7, 0.5)
+    
+            
+            for _, emitter in pairs(BlackHole:GetDescendants()) do 
+                if emitter:IsA("ParticleEmitter") or emitter:IsA("Beam") then 
+                    emitter.Enabled = true  
+                end 
+            end 
+    
+            task.wait(1.5)
+            task.spawn(function()
+                BlackHole.wind:Play()
+                BlackHole.bring:Play()
+    
+                for _, part in pairs(targetCharacter:GetChildren()) do 
+                    if not part:IsA("BasePart") then continue end 
+                    TweenService:Create(part,TweenInfo.new(1.4),{
+                        Position = BlackHole.Event.WorldPosition
+                    }):Play()
+                end 
+                task.wait(1.5)
+                targetCharacter:Destroy()
+            end)
+    
+            task.wait(3)
+            TweenService:Create(BlackHole.wind,TweenInfo.new(0.5),{
+                Volume = 0
+            }):Play()
+    
+            for _, emitter in pairs(BlackHole:GetDescendants()) do 
+                if emitter:IsA("ParticleEmitter") or emitter:IsA("Beam") then 
+                    emitter.Enabled = false 
+                end 
+            end 
+    
+            task.wait(2)
+            BlackHole.Parent = Services.ReplicatedStorage
+        elseif STOMP_EFFECT == "Spirit" then 
+            Spirit.Stomp:Play()
+            Aura.Transparency = 0
+            Aura.Position = targetCharacter:FindFirstChild("UpperTorso").Position 
+    
+            ShakeModule.StartShake(7, 0.5)
+
+            TweenService:Create(Aura,TweenInfo.new(2),{
+                Position = targetCharacter:FindFirstChild("UpperTorso").Position + Vector3.new(0,50,0),
+                Size = Vector3.new(120, 90, 120),
+                Transparency = 1
+            }):Play()
+    
+            DhLibrary:PlayAudio(6290067239)
+    
+            for _, asset in pairs(targetCharacter:GetDescendants()) do 
+                if not asset:IsA("BasePart") or not asset:IsA("Decal") then continue end 
+    
+                TweenService:Create(asset,TweenInfo.new(0.5),{
+                    Transparency = 1
+                }):Play()
+            end 
+        elseif STOMP_EFFECT == "Charm" then 
+            local Stomp = Charm.FX.Stomp 
+            local Sound = Charm.SFX:FindFirstChild("Explosive Hit 5")
+            local TargetPos = targetCharacter:FindFirstChild("UpperTorso").Position
+
+            local Emitters = {}
+
+            local PartOne = Stomp.PartOne:Clone()
+            local Part    = Stomp.Part:Clone()
+
+            Charm.Parent = workspace
+
+            PartOne.Position = TargetPos
+            PartOne.Anchored = true 
+            PartOne.Parent = workspace
+
+            Part.Position = TargetPos
+            Part.Anchored = true 
+            Part.Parent = workspace
+
+            for _, emitter in pairs(PartOne:GetDescendants()) do 
+                if emitter:IsA("ParticleEmitter") then 
+                    table.insert(Emitters,emitter)
+                end 
+            end 
+
+            for _, emitter in pairs(Part:GetDescendants()) do 
+                if emitter:IsA("ParticleEmitter") then 
+                    table.insert(Emitters,emitter)
+                end 
+            end
+
+            for _, emitter in pairs(Emitters) do 
+                emitter.Enabled = true   
+            end 
+
+            local old_color = LightingService.FogColor
+            Sound:Play()
+            for _, asset in pairs(targetCharacter:GetDescendants()) do 
+                if not asset:IsA("BasePart") or not asset:IsA("Decal") then continue end 
+    
+                TweenService:Create(asset,TweenInfo.new(0.5),{
+                    Transparency = 1
+                }):Play()
+            end 
+            TweenService:Create(LightingService,TweenInfo.new(0.5),{
+                FogColor = Color3.fromRGB(255, 42, 191)
+            }):Play()
+
+            task.wait(0.8)
+            Part:Destroy()
+            PartOne:Destroy()
+
+            TweenService:Create(LightingService,TweenInfo.new(0.5),{
+                FogColor = old_color
+            }):Play()
+            Charm.Parent = Services.ReplicatedStorage
+        elseif STOMP_EFFECT == "Thanos" then
+            local Sound = Instance.new("Sound",workspace)
+            Sound.SoundId = "rbxassetid://3050376525"
+            Sound:Play()
+
+            for _, part in pairs(targetCharacter:GetDescendants()) do 
+                if part:IsA("BasePart") or part:IsA("MeshPart") then 
+                    local Thanos_Effect = Thanos:Clone() 
+                    Thanos_Effect.Parent = part 
+                    Thanos_Effect.Color =  ColorSequence.new({ ColorSequenceKeypoint.new(0, part.Color), ColorSequenceKeypoint.new(0.6, Color3.fromRGB(65, 33, 18)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)) })
+
+                    TweenService:Create(part,TweenInfo.new(0.5),{
+                        Transparency = 1
+                    }):Play()
+
+                    task.delay(0.5,function()
+                        Thanos_Effect.Enabled = false 
+                    end)
+                    task.wait(.1)
+                end 
+            end
+            repeat task.wait() until Sound.TimeLength == 0
+            Sound:Destroy()
+        elseif STOMP_EFFECT == "Afterslash" then 
+            local AfterSlashEfx = AfterSlash:Clone()
+            local UpperTorso = targetCharacter:FindFirstChild("UpperTorso")
+            UpperTorso.Position = (CFrame.new(UpperTorso.Position) * CFrame.new(0,35,0)).Position
+
+            local Part = AfterSlashEfx.Part
+            Part.Position = UpperTorso.Position
+            Part.Parent = UpperTorso
+            Part.Size = Vector3.new(5,7,5)
+
+            for _ = 1, 25 do 
+                task.wait(math.random(1,9) / 100)
+                local Sound = Instance.new("Sound",Part)
+                Sound.SoundId = "rbxassetid://5989945551"
+                local DistortionSoundEffect = Instance.new("DistortionSoundEffect",Sound)
+                Sound.PlayOnRemove = true 
+                Sound:Destroy()
+                Part.Position = UpperTorso.Position
+            end
+
+            UpperTorso.Position = (CFrame.new(UpperTorso.Position) * CFrame.new(0, -5, 0)).Position
+            for _, emitter in pairs(Part:GetDescendants()) do
+                if emitter:IsA("ParticleEmitter") then
+                    emitter.Enabled = false
+                end
+            end
+
+            task.wait(0.25)
+            local Attachment = Instance.new("Attachment",workspace.Terrain)
+            Attachment.WorldPosition = UpperTorso.Position
+
+            local Sound = Instance.new("Sound",Part)
+            Sound.SoundId = "rbxassetid://4471648128" 
+            Sound.PlayOnRemove = true
+            Sound:Destroy()
+
+            for _, emitter in pairs(AfterSlashEfx.Burst:GetDescendants()) do 
+                if emitter:IsA("ParticleEmitter") then 
+                    emitter.Parent = Attachment
+                    emitter:Emit(emitter:GetAttribute("EmitCount"))
+                end 
+            end 
+
+            for _, part in pairs(targetCharacter:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    TweenService:Create(part, TweenInfo.new(0.5, Enum.EasingStyle.Sine), {
+                        Transparency = 1
+                    }):Play()
+                end
+            end 
+        elseif STOMP_EFFECT == "Rune" then
+            local 
+        end 
+    end 
+    function Modules:StompEffects(state)
+        if not state then 
+            DhLibrary:RemoveConnection("StompEffect")
+            return 
+        end 
+
+        DhLibrary:AddConnection("StompEffect", RunService.Heartbeat:Connect(function()
+            local playerCharacter = LocalPlayer.Character
+            if not playerCharacter or not playerCharacter:FindFirstChild("LowerTorso") or not playerCharacter:FindFirstChild("UpperTorso") then
+                return
+            end
+            
+            local rayOrigin = playerCharacter.LowerTorso.Position
+            local rayDirection = Vector3.new(0, -playerCharacter.UpperTorso.Size.y * 4.5, 0)
+            
+            local whitelist = {}
+            for _, player in ipairs(Services.Players:GetPlayers()) do
+                if player ~= Services.LocalPlayer and player.Character and not  whitelist[player.Character] then
+                    table.insert(whitelist, player.Character)
+                end
+            end
+            
+            if #whitelist > 0 then
+                local hitPart, hitPosition, hitNormal = workspace:FindPartOnRayWithWhitelist(
+                    Ray.new(rayOrigin, rayDirection),
+                    whitelist,
+                    false,
+                    true
+                )
+                
+                if hitPart then
+                    local stompedCharacter = hitPart:FindFirstAncestorOfClass("Model")
+                    if stompedCharacter and stompedCharacter:FindFirstChild("HumanoidRootPart") and stompedCharacter:FindFirstChild("BodyEffects") and stompedCharacter.BodyEffects.SDeath.Value and DhLibrary:IsAnimPlaying(playerCharacter,2816431506) then
+                        boobs(stompedCharacter)
+                    end
+                end
+            end
+        end))
+    end 
+end 
+do 
+    local Movement = MiscTab:AddLeftGroupbox("Movement")
+    local Player = MiscTab:AddLeftGroupbox("Player")
+    local Server = MiscTab:AddRightGroupbox( "Server")
+    local StompEffects = MiscTab:AddRightGroupbox("StompEffects")
+
+    -- StompEffects
+    StompEffects:AddToggle("StompEffects",{
+        Text = "Stompeffects",
+        Default = false,
+        Callback = function(state)
+            Modules:StompEffects(state)
+        end 
+    })
+    StompEffects:AddDropdown("Dropdown",{
+        Text = "Select stomp effect",
+        Values = {
+            "Spirit",
+            "RoadRoller",
+            "Rings",
+            "BlackHole",
+            "Charm",
+            "Thanos",
+            "Afterslash"
+        },
+        Default = 1,
+        Multi = false,
+        Callback = function(value)
+            States.StompEffect = value
+        end 
+    })
     -- Movement
-    Movement:toggle({
-        name = "Toggle Vehicle Fly",
-        default = false,
-        callback = function(state)
+    Movement:AddToggle("VFly",{
+        Text = "Toggle Vehicle Fly",
+        Default = false,
+        Callback = function(state)
             States.AllowedVehicleFly = state 
         end 
-    })
-    Movement:keybind({
-        default = Enum.KeyCode.End,
-        callback = function()
+    }):AddKeyPicker("Vehicle Fly",{ 
+        Text = "",
+        Default = "X",
+        Mode = "Toggle",
+        SyncToggleState = false,
+        Callback = function(key)
             Modules:VehicleFly()
-        end 
-    })
-    Movement:toggle({
-        name = "Toggle Player Fly",
-        default = false,
-        callback = function(state)
-            States.CanFly = state 
-        end 
+        end
     })
 
-    Movement:keybind({
-        default = Enum.KeyCode.End,
-        callback = function()
-            Modules:Fly()
+    Movement:AddToggle("PFly",{
+        Text = "Toggle Player Fly",
+        Default = false,
+        Callback = function(state)
+            States.CanFly = state 
         end 
+    }):AddKeyPicker("Player Fly",{ 
+        Text = "",
+        Default = "X",
+        Mode = "Toggle",
+        Callback = function(key)
+            Modules:Fly()
+        end
     })
-    Movement:slider({
-        name  = "Player Fly Speed",
-        suffix = "",
-        flag = "FlySpeed",
-        default = 2,
-        min = 1,
-        max = 20,
+
+    Movement:AddSlider("PSpeed",{
+        Text  = "Player Fly Speed",
+        Default = 2,
+        Min = 1,
+        Max = 20,
+        Rounding = 1,
+        Compact = false,
+        Callback = function(value)
+            States.FlySpeed = value 
+        end
     })
-    Movement:slider({
-        name  = "Vehicle Fly Speed",
-        suffix = "",
-        flag = "CarFlySpeed",
-        default = 2,
-        min = 1,
-        max = 20,
+    Movement:AddSlider("VFlySpeed",{
+        Text  = "Vehicle Fly Speed",
+        Default = 2,
+        Min = 1,
+        Max = 20,
+        Rounding = 1,
+        Compact = false,
+        Callback = function(value)
+            States.VehicleFlySpeed = value 
+        end
     })
     -- Player
-    Player:toggle({
-        name = "NoClip",
-        default = false,
-        callback = function(state)
+    Player:AddToggle("NoClip",{
+        Text = "NoClip",
+        Default = false,
+        Callback = function(state)
             Modules:NoClip(state)
         end 
     })
-    Player:toggle({
-        name = "No Jump Cooldown",
-        default = false,
-        callback = function(state)
+    Player:AddToggle("No Jump Cooldown",{
+        Text = "No Jump Cooldown",
+        Default = false,
+        Callback = function(state)
             if not Starting then 
                 States.Jumpcooldown = state 
                 Modules:NoJump(state)
             end 
         end 
     })
-    Player:toggle({
-        name = "Anti sit",
-        default = false,
-        callback = function(state)
+    Player:AddToggle("Anti sit",{
+        Text = "Anti sit",
+        Default = false,
+        Callback = function(state)
             if not Starting then 
                 Modules:AntiSit(state)
             end 
         end 
     })
-    Player:toggle({
-        name = "Anti Slow",
-        default = false,
-        callback = function(state)
+    Player:AddToggle("Anti Slow",{
+        Text = "Anti Slow",
+        Default = false,
+        Callback = function(state)
             if not Starting then 
                 Modules:AntiSlow(state)
             end 
         end 
     })
-    Player:toggle({
-        name = "Anti Stomp",
-        default = false,
-        callback = function(state)
+    Player:AddToggle("Anti Stomp",{
+        Text = "Anti Stomp",
+        Default = false,
+        Callback = function(state)
             if not Starting then 
                 States.AntiStomp = state
                 Modules:AntiStomp(state)
             end 
         end 
     })
-    Player:toggle({
-        name = "Rapid Fire",
-        default = false,
-        callback = function(state)
+    Player:AddToggle("Rapid Fire",{
+        Text = "Rapid Fire",
+        Default = false,
+        Callback = function(state)
             if not Starting then 
                 Modules:NoGunCd(state)
             end 
         end 
     })
     --Server
-    Server:textbox({flag = "job_id"})
-    Server:button({
-        name = "Join Server",
-        callback = function()
-            Modules:JoinServer(game.JobId or Flags["job_id"])
+    Server:AddInput("job_id",{
+        Default = "Enter JobId",
+        Finished = true,
+        Numeric = false,
+
+        Text = 'Enter job id',
+        PlaceHolder = "Enter jobid"
+    })
+    Server:AddButton({
+        Text = "Join Server",
+        Func = function()
+            Modules:JoinServer(game.JobId or Options.job_id.Value)
         end 
     })
-    Server:button({
-        name = "Copy JobId",
-        callback = function()
+    Server:AddButton({
+        Text = "Copy JobId",
+        Func = function()
             setclipboard(`game:GetService("TeleportService"):TeleportToPlaceInstance({PlaceId},"{game.JobId}")`)
         end 
-    })
-    --- UiSettings
-    UiSettings:toggle({
-        name = "Watermark",
-        default = true,
-        callback = function(state)
-            if not Starting then 
-                MainWindow.toggle_watermark(state)
-            end 
-        end 
-    })
-    local last = Color3.fromHex("#6464FF");
-    UiSettings:colorpicker({
-        name = "Ui Color",
-        color = Color3.fromHex("#6464FF"), 
-        callback = function(color)
-            if not Starting and color ~= last then 
-                last = color 
-                UiLibrary:update_theme("accent", color)
-            end 
-        end
-    })
-
-    UiSettings:keybind({
-        name = "Ui Keybind",
-        default = Enum.KeyCode.V,
-        callback = MainWindow.set_menu_visibility
     })
 end 
 
@@ -766,10 +1155,10 @@ do
         FaceCamera = true,
         Color = ColorSequence.new(Color3.fromRGB(170,170,170),Color3.fromRGB(170,170,170),Color3.fromRGB(170,170,170))
     })
-    MainSection:toggle({
-        name = "Grab",
-        default = false,
-        callback = function(state)
+    MainSection:AddToggle("Grab",{
+        Text = "Grab",
+        Default = false,
+        Callback = function(state)
             States.Grab = state
             if state then 
                 Tools["GrabReal"] = DhLibrary:Create("Tool",{
@@ -792,46 +1181,52 @@ do
             end 
         end 
     })
-    MainSection:dropdown({
-        flag = "grab_mode",
-        items = {
+    MainSection:AddDropdown("grab_mode",{
+        Text = "Grab mode",
+        Values = {
             "Grab",
             "Behind",
             "Infront",
             "Custom"
         },
-        multi = false,
-        tooltip = "Changes the grabbing mode"
+        Default = 1,
+        Multi = false,
     })
-    MainSection:textbox({
-        placeholdertext = "Custom sound id",
-        flag = "CustomSound"
+
+    MainSection:AddInput("CustomSound",{
+        Default  = "Enter a sound id",
+        Finished = true,
+        Numeric = false,
+
+
+        Text = 'Custom Sound id',
+        Placeholder = "Enter sound id",
     })
-    MainSection:slider({
-        suffix = "",
-        flag = "xAxis",
-        default = 2,
-        min = 0,
-        max = 20,
+    MainSection:AddSlider("xAxis",{
+        Text = "x axis",
+        Default = 2,
+        Min = 0,
+        Max = 20,
+        Rounding = 1,
     })
-    MainSection:slider({
-        suffix = "",
-        flag = "yAxis",
-        default = 2,
-        min = 0,
-        max = 20,
+    MainSection:AddSlider("yAxis",{
+        Text = "y axis",
+        Default = 2,
+        Min = 0,
+        Max = 20,
+        Rounding = 1,
     })
-    MainSection:slider({
-        suffix = "",
-        flag = "zAxis",
-        default = 2,
-        min = 0,
-        max = 20,
+    MainSection:AddSlider("zAxis",{
+        Text = "z axis",
+        Default = 2,
+        Min = 0,
+        Max = 20,
+        Rounding = 1,
     })
-    MainSection:toggle({
-        name = "Effects",
-        default = true,
-        callback = function(state)
+    MainSection:AddToggle("Effects",{
+        Text = "Effects",
+        Default = true,
+        Callback = function(state)
             States.Effects = state
         end 
     })
@@ -845,7 +1240,7 @@ do
             DhLibrary:StopAudio()
             DhLibrary:PlayAudio(7592607446)
             DhLibrary:PlayAnimation(Character,16768625968)
-            if GrabStates.Effects then 
+            if States.Effects then 
                 Chain.Attachment0 = DhLibrary:Create("Attachment",{
                     Parent = Grabbed:FindFirstChild("UpperTorso"),
                 })
@@ -961,10 +1356,14 @@ do
                     Parent = ClonedChar:FindFirstChild("UpperTorso") ,
                     D = 100,
                 })
-                -- _____GYAT <3
+
                 for _, _____GYAT in pairs(Grabbed:GetChildren()) do 
                     if _____GYAT:IsA("BasePart") and ClonedChar:FindFirstChild(_____GYAT.Name) then 
+                        if _____GYAT.Name == "UpperTorso" then 
+                            _____GYAT.CFrame = _____GYAT.CFrame * CFrame.Angles(math.rad(140),0,0)
+                        end 
                         Modules:AlignControl(_____GYAT,ClonedChar:FindFirstChild(_____GYAT.Name),CFrame.new(0,0,0))
+                    
                     end 
                 end 
 
@@ -986,6 +1385,9 @@ do
         end 
     })
 
+
+
+
 end 
 do 
     Modules:InitGrab()
@@ -995,5 +1397,7 @@ do
     end))
 end 
 
-UiLibrary:notification({text = "Legion loaded!"})
 Starting = false 
+
+ThemeManager:SetLibrary(UiLibrary)
+ThemeManager:ApplyTheme("Jester")
