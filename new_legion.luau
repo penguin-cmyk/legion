@@ -621,8 +621,10 @@ do
             RoadRoller.Parent = workspace
             RoadRoller.Anchored = true 
             RoadRoller.CFrame = targetCharacter.HumanoidRootPart.CFrame * CFrame.new(0, 40, 0)
-            
-            DhLibrary:PlayAudio(4877348549)
+            local Sound = Instance.new("Sound",workspace)
+            Sound.SoundId = "rbxassetid://4877348549"
+            Sound.PlayOnRemove = true 
+            Sound:Destroy()    
             
             TweenService:Create(
                 RoadRoller,
@@ -639,7 +641,11 @@ do
             task.wait(2)
             RoadRoller.CFrame = CFrame.new(20,2000,20)
         elseif STOMP_EFFECT == "Rings" then 
-            DhLibrary:PlayAudio(7456436580)
+            local Sound = Instance.new("Sound",workspace)
+            Sound.SoundId = "rbxassetid://7456436580"
+            Sound.PlayOnRemove = true 
+            Sound:Destroy()
+
             local FakePart = Instance.new("Part",workspace)
             FakePart.Transparency = 1
             FakePart.Position = targetCharacter.Head.Position
@@ -703,8 +709,10 @@ do
                 Size = Vector3.new(120, 90, 120),
                 Transparency = 1
             }):Play()
-    
-            DhLibrary:PlayAudio(6290067239)
+            local Sound = Instance.new("Sound",workspace)
+            Sound.SoundId = "rbxassetid://6290067239"
+            Sound.PlayOnRemove = true 
+            Sound:Destroy()
     
             for _, asset in pairs(targetCharacter:GetDescendants()) do 
                 if not asset:IsA("BasePart") or not asset:IsA("Decal") then continue end 
@@ -888,7 +896,8 @@ end
 do 
     local Movement = MiscTab:AddLeftGroupbox("Movement")
     local Player = MiscTab:AddLeftGroupbox("Player")
-    local Server = MiscTab:AddRightGroupbox( "Server")
+    local PlayerAnimations = MiscTab:AddLeftGroupbox("PlayerAnimations")
+    local Server = MiscTab:AddRightGroupbox("Server")
     local StompEffects = MiscTab:AddRightGroupbox("StompEffects")
 
     -- StompEffects
