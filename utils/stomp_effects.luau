@@ -118,7 +118,7 @@ end
 DhLibrary:AddConnection("ShakeModule", RunService.Heartbeat:Connect(updateCameraShake))
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local StompModule = {
-    StompEffect = "Spirit",
+    StompEffect = "HollowPurple",
     StompCooldown = 2,
     lastStompTime = 0,
     CurrentEffects = {}
@@ -722,6 +722,11 @@ local Effects = {
 }
 -- local function cause global is useless
 local function effect(targetCharacter)
+    local currentTime = tick()
+    if currentTime - StompModule.lastStompTime < StompModule.StompCooldown then 
+        return 
+    end
+    StompModule.lastStompTime = currentTime
     if Effects[StompModule.StompEffect] then 
         Effects[StompModule.StompEffect](targetCharacter,LocalPlayer.Character)
     end 
