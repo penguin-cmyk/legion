@@ -52,24 +52,6 @@ local AssetService = game:GetService("AssetService")
 local Train = AssetService:CreateMeshPartAsync("rbxassetid://743576537")
 local Aura = AssetService:CreateMeshPartAsync("http://www.roblox.com/asset/?id=1323306")
 
-local HeavenFx = Instance.new("Model",workspace)
-local Shockwave = AssetService:CreateMeshPartAsync("rbxassetid://437347603")
-local Meshpart  = AssetService:CreateMeshPartAsync("rbxassetid://5812640290")
-Shockwave.Parent = HeavenFx
-Shockwave.Name = "Shockwave"
-Shockwave.Material = "ForceField"
-Shockwave.Color = Color3.fromRGB(244,244,255)
-Shockwave.CanCollide = false 
-Shockwave.CastShadow = false 
-Shockwave.Anchored = true 
-
-Meshpart.Parent = HeavenFx
-Meshpart.Color = Color3.fromRGB(248,248,248)
-Meshpart.Material = "Neon"  
-Meshpart.CanCollide = false 
-Meshpart.CastShadow = false 
-Meshpart.Anchored = true 
-
 Aura.Color = Color3.fromRGB(4, 175, 236)
 Aura.Anchored = true 
 Aura.Parent = workspace
