@@ -784,4 +784,4 @@ for name, func in pairs(Effects) do
     table.insert(StompModule.CurrentEffects,name)
 end 
 
-return StompModule,DhLibrary
+return StompModule,DhLibrary,"Legion is back"
