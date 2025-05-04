@@ -102,15 +102,6 @@ local MessageOut = LogService.MessageOut
 local CurrentConnections = {}
 local openac_func;
 
-local openac_script;
-
-for _, script in pairs(getnilinstances()) do
-    if script:IsA("Script") and script.RunContext == Enum.RunContext.Client then
-        openac_script = script
-        break
-    end
-end
-
 local function intercepted(...)
     warn(`Intercepted: {...}`)
     return {}
