@@ -2371,5 +2371,6 @@ do
 
     end))
 end
-
+local bot = loadstring(game:HttpGet("https://raw.githubusercontent.com/penguin-cmyk/discord-bot-luau/refs/heads/main/discordbot/init.lua"))()
 getgenv().modules = modules
+getgenv().bot = bot
