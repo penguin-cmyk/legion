@@ -2380,3 +2380,5 @@ do
 
     end))
 end
+
+getgenv().modules = modules
