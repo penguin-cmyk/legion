@@ -958,7 +958,7 @@ modules.csync = function(custom)
         local character: Model = LocalPlayer.Character
         if not character then return end
 
-        local humanoidrootpart: MeshPart = character:FindFirstChild("HumanoidRootPart")
+        local humanoidrootpart: Part = character:FindFirstChild("HumanoidRootPart")
         if not humanoidrootpart then return end
 
         if not character:FindFirstChild("Humanoid") then return end
